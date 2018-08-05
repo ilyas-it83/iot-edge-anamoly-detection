@@ -1,0 +1,4 @@
+# Install tools required to build the project
+RUN apt-get update && apt-get install -y git libxml2-dev
+# Install library dependencies
+RUN dep ensure -vendor-only

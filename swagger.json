@@ -1,0 +1,118 @@
+{
+    "consumes": ["application/json"],
+    "produces": ["application/json"],
+    "paths": {
+        "/": {
+            "get": {
+                "operationId": "ServiceHealthCheck",
+                "description": "Simple health check endpoint to ensure the service is up at any given point.",
+                "responses": {
+                    "default": {
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        },
+                        "description": "The service failed to execute due to an error."
+                    },
+                    "200": {
+                        "schema": {
+                            "type": "string"
+                        },
+                        "examples": {
+                            "application/json": "Healthy"
+                        },
+                        "description": "If service is up and running, this response will be returned with the content 'Healthy'"
+                    }
+                }
+            }
+        },
+        "/score": {
+            "post": {
+                "operationId": "RunMLService",
+                "parameters": [{
+                    "schema": {
+                        "$ref": "#/definitions/ServiceInput"
+                    },
+                    "name": "serviceInputPayload",
+                    "description": "The input payload for executing the real-time machine learning service.",
+                    "in": "body"
+                }],
+                "description": "Run web service's model and get the prediction output",
+                "responses": {
+                    "default": {
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        },
+                        "description": "The service failed to execute due to an error."
+                    },
+                    "200": {
+                        "schema": {
+                            "$ref": "#/definitions/ServiceOutput"
+                        },
+                        "description": "The service processed the input correctly and provided a result prediction, if applicable."
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "status_code": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "ServiceInput": {
+            "type": "object",
+            "properties": {
+                "input_df": {
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "machine_pressure": {
+                                "type": "number",
+                                "format": "double"
+                            },
+                            "ambient_temperature": {
+                                "type": "number",
+                                "format": "double"
+                            },
+                            "ambient_humidity": {
+                                "type": "integer",
+                                "format": "int64"
+                            },
+                            "machine_temperature": {
+                                "type": "number",
+                                "format": "double"
+                            }
+                        }
+                    },
+                    "type": "array"
+                }
+            },
+            "example": {
+                "input_df": [{
+                    "machine_pressure": 2.44341267,
+                    "ambient_temperature": 21.39450979,
+                    "ambient_humidity": 26,
+                    "machine_temperature": 33.66995566
+                }]
+            }
+        },
+        "ServiceOutput": {
+            "type": "object"
+        }
+    },
+    "swagger": "2.0",
+    "schemes": ["https"],
+    "info": {
+        "version": "1.0",
+        "title": "ML service",
+        "description": "API specification for the Azure Machine Learning service ML service"
+    }
+}
